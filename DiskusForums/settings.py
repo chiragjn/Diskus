@@ -96,11 +96,10 @@ DATABASES = {
 }
 
 #Django Admin Files are collected at static root
-STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
 STATIC_URL = '/static/'
 
-STATIC_PATH = os.path.join(BASE_DIR,'static')
-
+STATIC_PATH = os.path.join(BASE_DIR,'staticfiles')
 STATICFILES_DIRS = (
     STATIC_PATH,
 )
