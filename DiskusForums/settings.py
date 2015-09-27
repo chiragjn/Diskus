@@ -11,16 +11,13 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
-
+import dj_database_url
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SETTINGS_DIR = os.path.dirname(__file__)
 PROJECT_PATH = os.path.join(SETTINGS_DIR, os.pardir)
 PROJECT_PATH = os.path.abspath(PROJECT_PATH)
 TEMPLATE_PATH = os.path.join(PROJECT_PATH, 'templates')
-print TEMPLATE_PATH
-DB_NAME = os.path.join(PROJECT_PATH, 'diskus.db')
 
 
 # Quick-start development settings - unsuitable for production
@@ -30,7 +27,7 @@ DB_NAME = os.path.join(PROJECT_PATH, 'diskus.db')
 SECRET_KEY = 'vyw*6)*+rzk-jhotux#t@gr(bb!&p8!w&c4cg_8)r1(&fgnmmj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -82,30 +79,40 @@ WSGI_APPLICATION = 'DiskusForums.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
+DATABASES ={}
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
+if os.environ.get('DATABASE_URL') == "":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
+else:
+    DATABASES = {
+        'default' : dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+    }
 
-import dj_database_url
-DATABASES = {
-'default' : dj_database_url.config(default=os.environ.get('DATABASE_URL'))
-}
+
+
+STATICFILES_FINDER = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
+
+STATIC_PATH = os.path.join(PROJECT_PATH,'staticfiles')
+STATIC_PATH = os.path.join(STATIC_PATH,'Diskus')
 
 #Django Admin Files are collected at static root
-STATIC_ROOT = os.path.join(BASE_DIR,'static')
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(PROJECT_PATH,'static')
 
-STATIC_PATH = os.path.join(BASE_DIR,'staticfiles')
 STATICFILES_DIRS = (
     STATIC_PATH,
 )
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media')
 
 
 # Internationalization
