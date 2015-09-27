@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load app_filters %}
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static "css/home.css"%}">
+{% endblock %}
+{% block body_block %}
+    <div class="row new-thread">
+		<div class="col-lg-10 col-lg-offset-1">
+			<a class="pull-right btn btn-black" href="{% if user.is_authenticated %} new-thread {% else %} login{% endif %}">New Thread</a>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-10 col-lg-offset-1">
+            {%  if categories %}
+                {% for category in categories %}
+                    <div class="category panel panel-default">
+                      <div class="panel-heading">
+                        <div class="row no-margin">
+                            <span class="panel-title">{{ category.name }}</span>
+                            <a class="btn btn-white pull-right" href="category/{{ category.slug }}">View All</a>
+                        </div>
+                      </div>
+                      <div class="panel-body">
+                          {% if top_threads|lookup:category.pk %}
+                              {% for thread in top_threads|lookup:category.pk %}
+                                <div class="row thread">
+                                    <a class="thread-title">{{ thread.0.title }}</a>
+                                    <div class="sub-title">Posted By : <a class="profile-link">{{ thread.0.op.user.username }}</a></div>
+                                    <div class="sub-title">Replies : {{ thread.1 }}</div>
+                                </div>
+                              {% endfor %}
+                          {% else %}
+                              <div class="row thread">
+                                    <div class="thread-title center">No Threads Found!</div>
+                              </div>
+                          {% endif %}
+                      </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+		</div>
+	</div>
+{% endblock %}
+{% block extra_js %}
+    <script type="text/javascript" src="{% static "js/home.js" %}"></script>
+{% endblock %}
