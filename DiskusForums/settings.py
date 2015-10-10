@@ -41,19 +41,27 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'easy_timezones',
     'Diskus',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'easy_timezones.middleware.EasyTimezoneMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
+
+GEOIP_DATABASE = os.path.join(PROJECT_PATH, 'GeoLiteCity.dat')
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'DiskusForums.urls'
 
@@ -81,11 +89,21 @@ WSGI_APPLICATION = 'DiskusForums.wsgi.application'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 DATABASES ={}
 
-if os.environ.get('DATABASE_URL') == "":
+if os.environ.get('DATABASE_URL') is None:
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #     }
+    # }
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        "default": {
+            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            "NAME": "diskus",
+            "USER": "",
+            "PASSWORD": "",
+            "HOST": "localhost",
+            "PORT": "",
         }
     }
 else:
@@ -120,12 +138,10 @@ MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media')
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = True
-
-

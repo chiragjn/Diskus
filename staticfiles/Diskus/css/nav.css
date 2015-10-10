@@ -7,7 +7,7 @@
 
 .navbar-default .navbar-nav>li
 {
-	margin: 1em 1em;
+	margin: 1rem 1em;
 }
 
 .navbar-default .navbar-nav>li>a,.navbar-default .navbar-nav>li>a:hover {
@@ -139,4 +139,67 @@ footer
 	{
 		margin-top: 6em;
 	}
+}
+
+
+.pinned
+{
+    background-color: #000000;
+    color: white;
+    padding: 0.3em 0.5em;
+    margin: 0 0.5em;
+    font-size: 0.8em;
+}
+
+.breadcrumb-link
+{
+    font-family: Montserrat;
+    font-family: 1em;
+    color: #000000;
+    margin: 0 3px;
+}
+
+.breadcrumb-link:hover
+{
+    color: #000000;
+    text-decoration: underline;
+}
+
+.breadcrumb-arrow
+{
+    line-height: 1.5em;
+}
+
+
+.current-page
+{
+    color: #000000;
+    font-family: Montserrat;
+    font-size: 1em;
+    margin: 0 5px;
+}
+
+.next-btn
+{
+   padding-left: 2em;
+   padding-right: 2em;
+}
+
+.new-thread
+{
+	margin-bottom: 2em;
+}
+
+
+.space-one-em
+{
+    padding: 0 1em;
+    margin: 1em 0;
+}
+
+.black-focus
+{
+    font-family: Montserrat;
+    line-height: 1.0em;
+
 }

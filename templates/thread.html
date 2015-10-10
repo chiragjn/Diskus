@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load app_filters %}
+{% load tz %}
+{% localtime on %}
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static "css/thread.css"%}">
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+{% endblock %}
+{% block body_block %}
+    <div class="row new-thread">
+		<div class="col-lg-10 col-lg-offset-1 center">
+          <a class="breadcrumb-link pull-left" href="/">Home</a>
+          <i class="breadcrumb-arrow fa fa-long-arrow-right pull-left"></i>
+          <a class="breadcrumb-link pull-left" href="/category/{{ thread.category.slug }}">{{ thread.category.name }}</a>
+          <i class="breadcrumb-arrow fa fa-long-arrow-right pull-left"></i>
+          <a class="breadcrumb-link pull-left thread-crumb" href="">{{ thread.title }}</a>
+        </div>
+    </div>
+    <div class="row new-thread">
+		<div class="col-lg-10 col-lg-offset-1 center">
+
+            {% if posts.has_previous %}
+                <a class="btn btn-black prev-btn" href="?page={{ posts.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span class="current-page">
+                Page {{ posts.number }} of {{ posts.paginator.num_pages }}
+            </span>
+
+            {% if posts.has_next %}
+                <a  class="btn btn-black next-btn" href="?page={{ posts.next_page_number }}">Next</a>
+            {% endif %}
+	    </div>
+    </div>
+
+    <div class="row">
+		<div class="thread-col col-lg-10 col-lg-offset-1">
+			<div class="panel panel-default">
+			  <div class="panel-heading">
+			  	<div class="row thread-head no-margin">
+			  		<span class="panel-title">{{ thread.title }}</span>
+                    {% if thread.pinned %}
+                        <span class="pinned">Pinned</span>
+                    {% endif %}
+                    {% if thread.locked %}
+                        <span class="pinned">Locked</span>
+                    {% endif %}
+			  		<a class="pull-right btn btn-black" {% if user.is_authenticated %} id="scrollToPostReply" {% else %} href="/login" {% endif %}>Post Reply</a>
+			  	</div>
+			  </div>
+			  <div class="panel-body">
+              {% for post in posts %}
+{#                  {% if post.visible %}#}
+                        <div class="post-row row">
+                            <div class="post-info center col-md-2 col-xs-3">
+                                <div>
+                                    <img class="avatar" src="{% if "http" in post.author.profile_image_url %} {{ post.author.profile_image_url }} {% else %} {% static "image/user.png" %} {% endif %}">
+                                </div>
+                                <div>
+                                   <a class="black-link black-focus space-one-em">{{ post.author.user.username }}</a>
+                                </div>
+                                <div>
+                                   <span class="black-focus space-one-em">
+                                   {% if post.author.type > 1 %}
+                                       Admin
+                                   {% elif post.author.type > 0 %}
+                                       Moderator
+                                   {% else %}
+                                       Member
+                                   {% endif %}
+                                   </span>
+                                </div>
+                            </div>
+                            <div class="post-arrow"></div>
+                            <div class="post-content col-md-10 col-xs-9">
+                                <div class="clearfix post-bar">
+                                    <span class="timestamp space-one-em">{{ post.date|date:'d-M-Y H:i' }}</span>
+                                    <a href="posts/{{ post.pk }}" class="pull-right black-link black-focus" data-toggle="tooltip" title="Permalink" data-placement="bottom">#{{ forloop.counter0|add:posts.start_index  }}</a>
+                                    {% if user.is_authenticated %}
+                                        <a href="report/{{ post.pk }}" class="pull-right black-link fa fa-exclamation" data-toggle="tooltip" title="Report" data-placement="bottom"></a>
+                                        {% if member %}
+                                            {% if member.user.pk == post.author.pk or member.type > 0 %}
+                                                {%  if first_post_pk and post.pk != first_post_pk %}
+                                                    <a href="deletepost/{{ posts.pk }}" class="pull-right black-link fa fa-times" data-toggle="tooltip" title="Delete" data-placement="bottom"></a>
+                                                {% endif %}
+                                                <a href="edit/{{ posts.pk }}" class="pull-right black-link fa fa-edit" data-toggle="tooltip" title="Edit" data-placement="bottom"></a>
+                                            {% endif %}
+                                        {% endif %}
+                                        <a href="js-here" class="pull-right black-link fa fa-quote-left" data-toggle="tooltip" title="Quote" data-placement="bottom"></a>
+                                    {% endif %}
+                                </div>
+                                <div class="post-body">
+                                    {{ post.content|safe }}
+                                </div>
+                            </div>
+                        </div>
+{#                  {% endif %}#}
+                {% endfor %}
+
+                {% if not thread.locked %}
+                    {% if user.is_authenticated %}
+                        <div class="post-row post-reply-row row">
+                            <div class="post-info center col-md-2 col-xs-3">
+                                <div><img class="avatar" src="{% if "http" in member.profile_image_url %}{{ member.profile_image_url }}{% else %}{% static "image/user.png" %}{% endif %}"></div>
+                            </div>
+                            <div class="post-arrow"></div>
+                            <div class="post-content post-reply-content col-md-10 col-xs-9">
+                                <div class="clearfix post-bar post-reply-bar">
+                                    <a class="black-link black-focus pull-left" style="line-height: 1.8em;">{{ member.user.username }}</a>
+                                </div>
+                                <div class="post-reply-body" id="summernote"></div>
+                                <div class="row no-margin space-one-em">
+                                   <div class="g-recaptcha pull-left" data-sitekey="6LeM3g0TAAAAABSeqA3seKDf3LnRg6P05SsaCFzi"></div>
+                                   <a class="pull-right btn btn-black make-post" data-csrf="{{  csrf_token }}" data-thread="{{ thread.pk }}">Submit</a>
+                                </div>
+                            </div>
+                        </div>
+                   {% endif %}
+                {% endif %}
+			  </div>
+			</div>
+		</div>
+	</div>
+<div class="modal uploading-modal">Uploading Your Image</div>
+{% endblock %}
+{% block extra_js %}
+    <script type="text/javascript" src="{% static "js/summernote.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/summernote-ext-video.js" %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static "css/summernote.css"%}">
+    <script type="text/javascript" src="{% static "js/thread.js" %}"></script>
+{% endblock %}
+{% endlocaltime %}
+

@@ -74,16 +74,3 @@
 	color: black;
 }
 
-.current-page
-{
-    color: #000000;
-    font-family: Montserrat;
-    font-size: 1em;
-    margin: 0 5px;
-}
-
-.next-btn
-{
-   padding-left: 2em;
-   padding-right: 2em;
-}

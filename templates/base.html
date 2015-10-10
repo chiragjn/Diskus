@@ -29,18 +29,18 @@
         <div class="collapse navbar-collapse" id="collapse-menu">
             <ul class="nav navbar-nav navbar-right">
              {% if user.is_authenticated %}
-                <li class="btn btn-black">
-                   <a href="profile">{{ user.username }}</a>
+                <li class="btn btn-black" onclick="location.href='/profile';">
+                   <a>{{ user.username }}</a>
                 </li>
-                <li class="btn btn-black">
-                   <a href="logout">Logout</a>
+                <li class="btn btn-black" onclick="location.href='/logout';">
+                   <a>Logout</a>
                 </li>
              {% else %}
-                 <li class="btn btn-black">
-                   <a href="login">Login</a>
+                 <li class="btn btn-black" onclick="location.href='/login';">
+                   <a>Login</a>
                 </li>
-                <li class="btn btn-black">
-                   <a href="register">Register</a>
+                <li class="btn btn-black" onclick="location.href='/register';">
+                   <a>Register</a>
                 </li>
              {% endif %}
             </ul>

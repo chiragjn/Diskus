@@ -23,6 +23,9 @@ urlpatterns = [
     url(r'^$', views.home, name='Home'),
     url(r'^logout/$', 'django.contrib.auth.views.logout',{'next_page': '/'}),
     url(r'^category/(?P<slug>[\w-]+)/$', views.getAllCategoryThreads, name='category_home'),
+    url(r'^category/(?P<slug_cat>[\w-]+)/thread/(?P<slug_thread>[\w-]+)/$', views.getThread, name='category_home'),
+    url(r'^makepost/$', views.makePost, name='post_create'),
+
 
 
 ]

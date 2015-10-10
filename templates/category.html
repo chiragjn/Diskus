@@ -7,6 +7,13 @@
 {% block body_block %}
     <div class="row new-thread">
 		<div class="col-lg-10 col-lg-offset-1 center">
+          <a class="breadcrumb-link pull-left" href="/">Home</a>
+          <i class="breadcrumb-arrow fa fa-long-arrow-right pull-left"></i>
+          <a class="breadcrumb-link pull-left" href="">{{ categories.0 }}</a>
+        </div>
+    </div>
+    <div class="row new-thread">
+		<div class="col-lg-10 col-lg-offset-1 center">
 
             {% if paginated_threads.has_previous %}
                 <a class="btn btn-black prev-btn" href="?page={{ paginated_threads.previous_page_number }}">Previous</a>
@@ -36,8 +43,14 @@
                           {% if threads %}
                               {% for thread in threads %}
                                 <div class="row thread">
-                                    <a class="thread-title">{{ thread.0.title }}</a>
-                                    <div class="sub-title">Posted By : <a class="profile-link">{{ thread.0.op.user.username }}</a></div>
+                                    <a class="thread-title" href="thread/{{ thread.0.slug }}">{{ thread.0.title }}</a>
+                                    {% if thread.0.pinned %}
+                                        <span class="pinned">Pinned</span>
+                                    {% endif %}
+                                    {% if thread.0.locked %}
+                                        <span class="pinned">Locked</span>
+                                    {% endif %}
+                                    <div class="sub-title">Posted By : <a class="profile-link">{{ thread.0.op.user.username }}</a> on {{ thread.0.date|date:'d-M-Y' }}</div>
                                     <div class="sub-title">Replies : {{ thread.1 }}</div>
                                 </div>
                               {% endfor %}

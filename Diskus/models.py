@@ -1,13 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
-from numpy.distutils.system_info import blas_info
+from DiskusForums import settings
 import itertools
 
 
 class Member(models.Model):
     user = models.OneToOneField(User)
-    profile_image_url = models.CharField(max_length=100,blank=True, default='image/user.png')
+    profile_image_url = models.CharField(max_length=1000,blank=True, default=settings.STATIC_URL + "image/user.png")
     type = models.IntegerField(default=0)
     date_of_birth = models.DateField(auto_now=True, null=False)
     details_visible = models.BooleanField(default=True)
@@ -68,7 +68,7 @@ class Post(models.Model):
     author = models.ForeignKey(Member)
     thread = models.ForeignKey(Thread)
     date = models.DateTimeField(auto_now_add=True)
-    content = models.CharField(max_length=10000, null=False)
+    content = models.TextField(null=False)
     visible = models.BooleanField(default=True)
 
     def __unicode__(self):
@@ -90,7 +90,7 @@ class Report(models.Model):
 
 
 class ImageUploads(models.Model):
-    img = models.ImageField(upload_to='pic_folder/',default = 'pic_folder/None/no-img.jpg')
+    img = models.ImageField(upload_to='pic_folder/', default='pic_folder/None/no-img.jpg')
     name = models.CharField(max_length=15, default=None)
 
 

@@ -7,6 +7,9 @@
 {% block body_block %}
     <div class="row new-thread">
 		<div class="col-lg-10 col-lg-offset-1">
+            {% if user.is_authenticated and user.is_superuser %}
+                <a class="pull-right btn btn-black" href="new-category">New Category</a>
+            {% endif %}
 			<a class="pull-right btn btn-black" href="{% if user.is_authenticated %} new-thread {% else %} login{% endif %}">New Thread</a>
 		</div>
 	</div>
@@ -25,8 +28,14 @@
                           {% if top_threads|lookup:category.pk %}
                               {% for thread in top_threads|lookup:category.pk %}
                                 <div class="row thread">
-                                    <a class="thread-title">{{ thread.0.title }}</a>
-                                    <div class="sub-title">Posted By : <a class="profile-link">{{ thread.0.op.user.username }}</a></div>
+                                    <a class="thread-title" href="/category/{{ category.slug }}/thread/{{ thread.0.slug }}">{{ thread.0.title }}</a>
+                                    {% if thread.0.pinned %}
+                                        <span class="pinned">Pinned</span>
+                                    {% endif %}
+                                    {% if thread.0.locked %}
+                                        <span class="pinned">Locked</span>
+                                    {% endif %}
+                                    <div class="sub-title">Posted by : <a class="profile-link">{{ thread.0.op.user.username }}</a> on {{ thread.0.date|date:'d-M-Y' }}</div>
                                     <div class="sub-title">Replies : {{ thread.1 }}</div>
                                 </div>
                               {% endfor %}
