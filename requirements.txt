@@ -5,8 +5,6 @@ django-easy-timezones
 django-fields
 Pillow
 psycopg2
-py2app
 pycrypto
-pygame
 pygeoip
 pytz
