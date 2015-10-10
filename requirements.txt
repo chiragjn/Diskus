@@ -8,3 +8,4 @@ psycopg2
 pycrypto
 pygeoip
 pytz
+gunicorn
