@@ -203,3 +203,8 @@ footer
     line-height: 1.0em;
 
 }
+
+a:focus
+{
+    color: #000000;
+}

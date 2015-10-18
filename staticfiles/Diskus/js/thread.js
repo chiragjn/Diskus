@@ -97,7 +97,7 @@ $(document).ready(function() {
               url: "/makepost/",
               data:
               {
-                  threadid: $('.make-post').attr('data-thread'),
+                  thread_id: $('.make-post').attr('data-thread'),
                   content: code,
                   csrfmiddlewaretoken: $('.make-post').attr('data-csrf'),
               },
