@@ -73,13 +73,6 @@ $(document).ready(function() {
 
     }
 
-	$('#scrollToPostReply').click(function(){
-		var target = $('.post-reply-row');
-		$('html,body').animate({
-          scrollTop: target.offset().top
-        }, 1000);
-	}); 
-
 
 	$('[data-toggle="tooltip"]').tooltip();
 
@@ -94,19 +87,22 @@ $(document).ready(function() {
         {
             $.ajax({
               type: "POST",
-              url: "/makepost/",
+              url: "/make-new-thread/",
               data:
               {
-                  thread_id: $('.make-post').attr('data-thread'),
+                  thread_title: $('#thread_title').val(),
                   content: code,
+                  category_slug: $('#category_slug').val(), 
                   csrfmiddlewaretoken: $('.make-post').attr('data-csrf'),
               },
               success: function (response) {
-                if(response == "200")
+                if(response)
                 {
-                    var redirect_url = window.location.href.split('?')[0] + '?page=100000';
-                    console.log(redirect_url);
-                    window.location.href = redirect_url;
+                    var pathArray = location.href.split( '/' );
+                    var protocol = pathArray[0];
+                    var host = pathArray[2];
+                    var url = protocol + '//' + host;
+                    window.location.href = url + "/" + response;
                 }
               }
             });

@@ -5,7 +5,6 @@
 {% localtime on %}
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static "css/thread.css"%}">
-    <script src='https://www.google.com/recaptcha/api.js'></script>
 {% endblock %}
 {% block body_block %}
     <div class="row new-thread">
@@ -111,7 +110,6 @@
                                 </div>
                                 <div class="post-reply-body" id="summernote"></div>
                                 <div class="row no-margin space-one-em">
-                                   <div class="g-recaptcha pull-left" data-sitekey="6LeM3g0TAAAAABSeqA3seKDf3LnRg6P05SsaCFzi"></div>
                                    <a class="pull-right btn btn-black make-post" data-csrf="{{  csrf_token }}" data-thread="{{ thread.pk }}">Submit</a>
                                 </div>
                             </div>

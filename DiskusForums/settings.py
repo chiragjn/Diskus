@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'DiskusForums.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-DATABASES ={}
+DATABASES = {}
 
 if os.environ.get('DATABASE_URL') is None:
     # DATABASES = {
@@ -101,17 +101,15 @@ if os.environ.get('DATABASE_URL') is None:
             "ENGINE": "django.db.backends.postgresql_psycopg2",
             "NAME": "diskus",
             "USER": "",
-            "PASSWORD": "",
+            "PASSWORD": "pass",
             "HOST": "localhost",
             "PORT": "",
         }
     }
 else:
     DATABASES = {
-        'default' : dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
     }
-
-
 
 STATICFILES_FINDER = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -121,9 +119,9 @@ STATICFILES_FINDER = (
 STATIC_PATH = os.path.join(PROJECT_PATH,'staticfiles')
 STATIC_PATH = os.path.join(STATIC_PATH,'Diskus')
 
-#Django Admin Files are collected at static root
+# Django Admin Files are collected at static root
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(PROJECT_PATH,'static')
+STATIC_ROOT = os.path.join(PROJECT_PATH, 'static')
 
 STATICFILES_DIRS = (
     STATIC_PATH,
@@ -145,3 +143,44 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Mail Credentials
+EMAIL_HOST = 'smtp.google.com'
+EMAIL_HOST_USER = 'diskusforums@gmail.com'
+EMAIL_HOST_PASSWORD = 'Engineer$@789'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'filters': {
+            'require_debug_false': {
+                '()': 'django.utils.log.RequireDebugFalse'
+            }
+        },
+        'handlers': {
+            'mail_admins': {
+                'level': 'ERROR',
+                'filters': ['require_debug_false'],
+                'class': 'django.utils.log.AdminEmailHandler'
+            },
+            'console':{
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler'
+            },
+        },
+        'loggers': {
+            'django.request': {
+                'handlers': ['mail_admins'],
+                'level': 'ERROR',
+                'propagate': True,
+                },
+            'Diskus.views': {
+                'handlers': ['console'],
+                'level': 'INFO'
+            },
+
+            }
+    }
+

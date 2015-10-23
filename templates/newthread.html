@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load app_filters %}
+{% load tz %}
+{% localtime on %}
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static "css/thread.css"%}">
+{% endblock %}
+{% block body_block %}
+{% if categories %}
+<div class="row">
+	<div class="thread-col col-lg-10 col-lg-offset-1">
+		<div class="row">
+			<label for="category"><h3>Category:</h3></label>
+			<select class="form-control" id="category_slug">
+				{% for category in categories %}
+					{% if category.pk == selected_category %}
+						<option value="{{category.slug}}" selected >{{category.name}}</option>
+					{% else %}
+						<option value="{{category.slug}}">{{category.name}}</option>
+					{% endif %}
+				{% endfor %}
+			</select>
+		</div>
+		<div class="row">
+			<input type="text" class="col-lg-12 input form-control input-lg" id="thread_title" placeholder="Enter the thread tile">
+		</div>	
+		<div class="post-row post-reply-row row">
+	        <div class="post-info center col-md-2 col-xs-3">
+	            <div><img class="avatar" src="{% if "http" in member.profile_image_url %}{{ member.profile_image_url }}{% else %}{% static "image/user.png" %}{% endif %}"></div>
+	        </div>
+	        <div class="post-arrow"></div>
+	        <div class="post-content post-reply-content col-md-10 col-xs-9">
+	            <div class="clearfix post-bar post-reply-bar">
+	                <a class="black-link black-focus pull-left" style="line-height: 1.8em;">{{ member.user.username }}</a>
+	            </div>
+	            <div class="post-reply-body" id="summernote"></div>
+	            <div class="row no-margin space-one-em">
+	               <a class="pull-right btn btn-black make-post" data-csrf="{{  csrf_token }}" data-thread="{{ thread.pk }}">Create Thread</a>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+</div>
+{% else %}
+<div class="row thread">
+    <div class="thread-title center">No Categories Found!</div>
+</div>
+{% endif %}
+{% endblock %}		    
+{% block extra_js %}
+    <script type="text/javascript" src="{% static "js/summernote.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/summernote-ext-video.js" %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static "css/summernote.css"%}">
+    <script type="text/javascript" src="{% static "js/newthread.js" %}"></script>
+{% endblock %}
+{% endlocaltime %}

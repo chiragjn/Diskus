@@ -7,7 +7,7 @@ import itertools
 
 class Member(models.Model):
     user = models.OneToOneField(User)
-    profile_image_url = models.CharField(max_length=1000,blank=True, default=settings.STATIC_URL + "image/user.png")
+    profile_image_url = models.CharField(max_length=1000, blank=True, default=settings.STATIC_URL + "image/user.png")
     type = models.IntegerField(default=0)
     date_of_birth = models.DateField(auto_now=True, null=False)
     details_visible = models.BooleanField(default=True)

@@ -36,7 +36,7 @@
                       <div class="panel-heading">
                         <div class="row no-margin">
                             <span class="panel-title">{{ category.name }}</span>
-                            <a class="pull-right btn btn-white" href="{% if user.is_authenticated %} new-thread {% else %} /login{% endif %}">New Thread</a>
+                            <a class="pull-right btn btn-white" href="{% if user.is_authenticated %} /new-thread?category={{ category.slug }} {% else %} /login{% endif %}">New Thread</a>
                         </div>
                       </div>
                       <div class="panel-body">
