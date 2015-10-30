@@ -1,3 +1,5 @@
+dj-static
+static3
 dj_database_url
 Django
 django-cors-headers
