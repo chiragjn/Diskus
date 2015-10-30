@@ -13,12 +13,12 @@ from datetime import datetime
 import hashlib
 import logging
 import math
+from django.contrib.auth.decorators import login_required
 
 log = logging.getLogger(__name__)
 posts_per_page = 15
-threads_per_page =15
-#TO DO
-#Profile Image
+threads_per_page = 15
+
 
 def anonymous_required(view_function, redirect_to=None):
     return AnonymousRequired(view_function, redirect_to)
@@ -57,6 +57,10 @@ def home(request):
             top_threads[str(category.pk)] = [[thread, str(thread.post_set.count() - 1)] for thread in Thread.objects.filter(category=category, visible=True).order_by('-last_modified')[:2]]
         context_dict['categories'] = categories
         context_dict['top_threads'] = top_threads
+        if request.user.is_authenticated():
+            member = Member.objects.get(user=request.user)
+            if member:
+                context_dict['member'] = member
         return render(request, 'home.html', context_dict)
     else:
         return server_error(request)
@@ -151,6 +155,7 @@ def make_post(request):
         return server_error(request)
 
 
+@login_required(login_url='/login/')
 def start_new_thread(request):
     context_dict = {}
     context_dict['selected_category'] = -1
@@ -167,7 +172,7 @@ def start_new_thread(request):
     else:
         return server_error(request)
         
-
+@login_required(login_url='/login/')
 def post_new_thread(request):
     if request.user.is_authenticated() and request.POST:
         member = Member.objects.get(user=request.user)
@@ -303,6 +308,7 @@ def forgot_password(request):
         return server_error(request)
 
 
+@login_required(login_url='/login/')
 def profile(request, slug):
     member = Member.objects.get(slug=slug)
     self = request.user.is_authenticated() and request.user == member.user
@@ -311,6 +317,7 @@ def profile(request, slug):
     return render(request, 'profile.html', {'member': member, 'self': self, 'threads': threads, 'posts': posts})
 
 
+@login_required(login_url='/login/')
 def profile_edit(request, slug):
     if request.method == 'GET':
         if request.user.is_authenticated() and request.user == Member.objects.get(slug=slug).user:
@@ -365,6 +372,7 @@ def send_verification_email(request, user):
     send_mail('Verify your Diskus Account!', message, 'diskusforums@gmail.com', [user.email])
 
 
+@login_required(login_url='/login/')
 def view_post(request, slug_cat, slug_thread, post_number, relative_post_number):
     thread = Thread.objects.get(slug=slug_thread)
     if thread and thread.category.slug == slug_cat:
@@ -374,6 +382,7 @@ def view_post(request, slug_cat, slug_thread, post_number, relative_post_number)
         return page_not_found(request)
 
 
+@login_required(login_url='/login/')
 def delete_post(request, slug_cat, slug_thread, post_number):
     if request.user.is_authenticated():
         post = Post.objects.get(pk=post_number)
@@ -392,6 +401,7 @@ def delete_post(request, slug_cat, slug_thread, post_number):
         return redirect('/login/')
 
 
+@login_required(login_url='/login/')
 def edit_post(request, slug_cat, slug_thread, post_number):
     if request.user.is_authenticated():
         post = Post.objects.get(pk=post_number)
@@ -408,6 +418,7 @@ def edit_post(request, slug_cat, slug_thread, post_number):
         return redirect('/login/')
 
 
+@login_required(login_url='/login/')
 def save_edited_post(request, slug_cat, slug_thread, post_number):
     if request.user.is_authenticated() and request.POST:
         post = Post.objects.get(pk=post_number)
@@ -420,3 +431,19 @@ def save_edited_post(request, slug_cat, slug_thread, post_number):
             return server_error(request)
     else:
         return server_error(request)
+
+
+@login_required(login_url='/login/')
+def add_category(request):
+    if request.user.is_authenticated() and request.POST:
+        member = Member.objects.get(user=request.user)
+        if member and member.type==2:
+            category = Category()
+            category.name = request.POST['category']
+            category.save()
+            return redirect('/')
+        else:
+            return server_error(request)
+    else:
+        return server_error(request)
+            

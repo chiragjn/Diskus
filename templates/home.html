@@ -7,8 +7,8 @@
 {% block body_block %}
     <div class="row new-thread">
 		<div class="col-lg-10 col-lg-offset-1">
-            {% if user.is_authenticated and user.is_superuser %}
-                <a class="pull-right btn btn-black" href="new-category" style="margin-left: 1em;">New Category</a>
+            {% if member and user.is_authenticated and member.type == 2  %}
+                <a class="pull-right btn btn-black" href="new-category" style="margin-left: 1em;" data-toggle="modal" data-target="#addCategory">New Category</a>
             {% endif %}
 			<a class="pull-right btn btn-black" href="{% if user.is_authenticated %} /new-thread {% else %} login{% endif %}">New Thread</a>
 		</div>
@@ -50,6 +50,32 @@
             {% endif %}
 		</div>
 	</div>
+  {% if user.is_authenticated and member and member.type == 2  %}
+      <div class="modal fade" id="addCategory" tabindex="-1" role="dialog" aria-labelledby="deleteModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="btn btn-white btn-modal pull-right" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="aboutModalLabel">Add a New Category</h4>
+          </div>
+          <form method="POST" action="/add-category/">
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12">
+                  {% csrf_token %}
+                  <input data-toggle="tooltip" data-placement="right" id="category" class="input form-control input-lg" type="text" name="category" placeholder="Category Name">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-black" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-black">Add</a>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>          
+  {% endif %}
 {% endblock %}
 {% block extra_js %}
     <script type="text/javascript" src="{% static "js/home.js" %}"></script>

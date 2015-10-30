@@ -4,9 +4,7 @@ from Diskus import views
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
-import logging
 
-log = logging.getLogger('gunicorn.error')
 
 admin.autodiscover()
 urlpatterns = [
@@ -28,6 +26,7 @@ urlpatterns = [
     url(r'^new-thread/$', views.start_new_thread, name='thread_create_form'),
     url(r'^make-new-thread/$', views.post_new_thread, name='thread_object_create'),
     url(r'^category/(?P<slug_cat>[\w-]+)/thread/(?P<slug_thread>[\w-]+)/deletepost/(?P<post_number>\d+)$', views.delete_post, name='delete_post'),
+    url(r'^add-category/$', views.add_category, name='add_category'),
 ]
 
 
