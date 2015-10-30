@@ -27,7 +27,7 @@ TEMPLATE_PATH = os.path.join(PROJECT_PATH, 'templates')
 SECRET_KEY = 'vyw*6)*+rzk-jhotux#t@gr(bb!&p8!w&c4cg_8)r1(&fgnmmj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
