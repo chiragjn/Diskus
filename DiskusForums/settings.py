@@ -27,7 +27,7 @@ TEMPLATE_PATH = os.path.join(PROJECT_PATH, 'templates')
 SECRET_KEY = 'vyw*6)*+rzk-jhotux#t@gr(bb!&p8!w&c4cg_8)r1(&fgnmmj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -116,16 +116,16 @@ STATICFILES_FINDER = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
-STATIC_PATH = os.path.join(PROJECT_PATH,'staticfiles')
-STATIC_PATH = os.path.join(STATIC_PATH,'Diskus')
-
-# Django Admin Files are collected at static root
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(PROJECT_PATH, 'static')
+STATIC_PATH = os.path.join(PROJECT_PATH, 'staticfiles')
+STATIC_PATH = os.path.join(STATIC_PATH, 'Diskus')
 
 STATICFILES_DIRS = (
     STATIC_PATH,
 )
+
+# Django Admin Files are collected at static root
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(PROJECT_PATH, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media')
@@ -145,42 +145,65 @@ USE_L10N = True
 USE_TZ = True
 
 # Mail Credentials
-EMAIL_HOST = 'smtp.google.com'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'diskusforums@gmail.com'
 EMAIL_HOST_PASSWORD = 'Engineer$@789'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'filters': {
-            'require_debug_false': {
-                '()': 'django.utils.log.RequireDebugFalse'
-            }
+    'version': 1,
+    'disable_existing_loggers': True,
+    'root': {
+        'level': 'WARNING',
+        'handlers': [],
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
-        'handlers': {
-            'mail_admins': {
-                'level': 'ERROR',
-                'filters': ['require_debug_false'],
-                'class': 'django.utils.log.AdminEmailHandler'
-            },
-            'console':{
-                'level': 'DEBUG',
-                'class': 'logging.StreamHandler'
-            },
+        'generic': {
+            'format': '%(asctime)s [%(process)d] [%(levelname)s] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+            '()': 'logging.Formatter',
         },
-        'loggers': {
-            'django.request': {
-                'handlers': ['mail_admins'],
-                'level': 'ERROR',
-                'propagate': True,
-                },
-            'Diskus.views': {
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'error_file': {
+            'class': 'logging.FileHandler',
+            'formatter': 'generic',
+            'filename': 'DiskusForums/gunicorn.error.log',
+        },
+        'access_file': {
+            'class': 'logging.FileHandler',
+            'formatter': 'generic',
+            'filename': 'DiskusForums/gunicorn.access.log',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'gunicorn.error': {
+            'level': 'INFO',
+            'handlers': ['error_file'],
+            'propagate': True,
+        },
+        'gunicorn.access': {
+            'level': 'INFO',
+            'handlers': ['access_file'],
+            'propagate': False,
+        },
+       'Diskus.views': {
                 'handlers': ['console'],
                 'level': 'INFO'
             },
-
-            }
-    }
-
+    },
+}

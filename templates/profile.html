@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
+{% load static from staticfiles %}
 {% load app_filters %}
 {% block extra_css %}
 {% endblock %}
 {% block body_block %}
     <div class="row">
-        <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-            {% if user. %}
+        <div class="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2">
+            {% if not member.details_visible and not self %}
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                    {{ member.user.username }} has kept his details invisible!
+                </div>
+            {% endif %}
+            {% if status %}
                 <div class="alert alert-danger" role="alert">
                     <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
                     {{ status }}
@@ -20,20 +26,102 @@
             {% endif %}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <span class="panel-title">Forgot Password</span>
+                    <span class="panel-title">{{ member.user.username }}</span>
+                    {% if request.user == member.user %}
+                        <a class="btn btn-white pull-right" href="/profile/{{ member.slug }}/edit/">Edit</a>
+                    {% endif %}
                 </div>
                 <div class="panel-body">
-                    <form class="form-horizontal" method="POST">
-                        {% csrf_token %}
-                        <input class="input form-control input-lg" type="text" name="username" placeholder="Username">
-                        <p class="center-block center footer-link">OR</p>
-                        <input class="input form-control input-lg" type="text" name="email" placeholder="Email">
-                        <input class="center-block submit-button form-control btn-black center" type="submit" name="forgot" value="Send Mail">
-                    </form>
+                    <h3> </h3>
+                    <div class="row">
+                        <div class="center col-xs-4">
+                            <div><img class="img-gray avatar3" src="{% if "http" in member.profile_image_url %}{{ member.profile_image_url }}{% else %}{% static "image/user.png" %}{% endif %}"></div>
+                            {% if member.details_visible or self %}
+                                <h4>{{ member.user.first_name }}  {{ member.user.last_name }}
+                                {% if member.type == 2 %}
+                                <span class="glyphicon glyphicon-fire" title="Admin" data-toggle="tooltip" data-placement="right" aria-hidden="true"></span>
+                                {% elif member.type == 1%}<span class="glyphicon glyphicon-eye-open" title="Moderator" data-toggle="tooltip" data-placement="right" aria-hidden="true"></span>
+                                {% else %}<span class="glyphicon glyphicon-user" title="User" data-toggle="tooltip" data-placement="right" aria-hidden="true"></span>
+                                {% endif %}
+                                </h4>
+                            {% endif %}
+                        </div>
+                        <div class="col-xs-8 vertical-parent">
+                            {% if not member.details_visible and not self %}
+                                <div class="glyphicon glyphicon-lock vertical-align" style="text-align:center; height: 150px" aria-hidden="true"></div>
+                            {% else %}
+                                <p>Email: <a class="footer-link" href="mailto:{{ member.user.email }}">{{ member.user.email }}</a></p>
+                                <p>Member Since: {{ member.user.date_joined|date:'M d, Y' }}</p>
+                                {% if member.location %}
+                                    <p>From: <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> {{ member.location }}</p>
+                                {% endif %}
+                                <p>Says: &#8220;<i> {{ member.bio|safe }} </i>&#8221;</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="panel-title">Threads</span>
+                    {% if threads|length %}
+                        <a class="btn btn-white pull-right" href="/profile/{{ member.slug }}/threads/">View All</a>
+                    {% endif %}
+                </div>
+                <div class="panel-body">
+                    {% for thread in threads %}
+                         <div class="row thread">
+                            <a class="thread-title" href="/category/{{ thread.category.slug }}/thread/{{ thread.slug }}">{{ thread.title }}</a>
+                            <div class="sub-title pull-right">Posted on {{ thread.date|date:'M d, Y' }}</div>
+{#                            <!-- <div class="sub-title">Moderated By : <a class="profile-link" href="/profile/{{ thread.moderator.slug }}">{{ thread.moderator.user.username }}</a></div> -->#}
+                             {% if thread.pinned %}
+                                <span class="pinned">Pinned</span>
+                             {% endif %}
+                             {% if thread.locked %}
+                                <span class="pinned">Locked</span>
+                             {% endif %}
+                            <div class="sub-title">Category : <a href="/category/{{ thread.category.slug }}" class="profile-link">{{ thread.category }}</a></div>
+                            <div class="sub-titles">Replies : {{ thread.post_set.count }}</div>
+                         </div>
+                    {% empty %}
+                        <div class="center paddings">
+                            <span>{{ member.user.username }} has not created any threads!</span>
+                        </div>
+                    {% endfor %}
+                    </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="panel-title">Posts</span>
+                    {% if threads|length %}
+                        <a class="btn btn-white pull-right" href="/profile/{{ member.slug }}/posts/">View All</a>
+                    {% endif %}
+                </div>
+                <div class="panel-body">
+                    {% for post in posts %}
+                        <div class="row thread">
+                            <a class="thread-title" href="/category/{{ post.thread.category.slug }}/thread/{{ post.thread.slug }}">{{ post.thread.title }}</a>
+                            <div class="sub-title pull-right">Posted on {{ post.date|date:'M d, Y' }}</div>
+                            <div class="sub-title">By : <a class="profile-link" href="/profile/{{ post.author.slug }}">{{ post.author }}</a></div>
+                            <div class="sub-title">
+                                {% if post.visible %}
+                                    {{ post.content|safe }}
+                                {% else %}
+                                    [ Post Deleted ]
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="center paddings">
+                            <span>{{ member.user.username }} has not created any posts!</span>
+                        </div>
+                    {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 {% endblock %}
 {%  block extra_js %}
+    <script type="text/javascript" src="{% static 'js/profile.js' %}"> </script>
 {% endblock %}

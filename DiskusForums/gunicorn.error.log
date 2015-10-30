@@ -1,0 +1,44 @@
+2015-10-30 03:32:20 [2183] [INFO] Worker exiting (pid: 2183)
+2015-10-30 03:32:20 [2184] [INFO] Worker exiting (pid: 2184)
+2015-10-30 03:32:20 [2185] [INFO] Worker exiting (pid: 2185)
+2015-10-30 03:32:29 [2236] [ERROR] []
+2015-10-30 03:32:30 [2235] [ERROR] []
+2015-10-30 03:32:30 [2237] [ERROR] []
+2015-10-30 03:33:10 [2237] [INFO] Worker exiting (pid: 2237)
+2015-10-30 03:33:10 [2235] [INFO] Worker exiting (pid: 2235)
+2015-10-30 03:33:10 [2236] [INFO] Worker exiting (pid: 2236)
+2015-10-30 03:33:18 [2265] [ERROR] []
+2015-10-30 03:33:18 [2266] [ERROR] []
+2015-10-30 03:33:18 [2267] [ERROR] []
+2015-10-30 03:34:42 [2267] [INFO] Worker exiting (pid: 2267)
+2015-10-30 03:34:42 [2266] [INFO] Worker exiting (pid: 2266)
+2015-10-30 03:34:42 [2265] [INFO] Worker exiting (pid: 2265)
+2015-10-30 03:34:48 [2305] [ERROR] /static/ /Users/chirag/PycharmProjects/Diskus/static
+2015-10-30 03:34:48 [2306] [ERROR] /static/ /Users/chirag/PycharmProjects/Diskus/static
+2015-10-30 03:34:48 [2307] [ERROR] /static/ /Users/chirag/PycharmProjects/Diskus/static
+2015-10-30 03:37:15 [2306] [INFO] Worker exiting (pid: 2306)
+2015-10-30 03:37:15 [2305] [INFO] Worker exiting (pid: 2305)
+2015-10-30 03:37:15 [2307] [INFO] Worker exiting (pid: 2307)
+2015-10-30 03:44:30 [2366] [ERROR] /static/ /Users/chirag/PycharmProjects/Diskus/static
+2015-10-30 03:45:50 [2409] [ERROR] /static/ /Users/chirag/PycharmProjects/Diskus/static
+2015-10-30 03:45:51 [2407] [ERROR] /static/ /Users/chirag/PycharmProjects/Diskus/static
+2015-10-30 03:45:51 [2408] [ERROR] /static/ /Users/chirag/PycharmProjects/Diskus/static
+2015-10-30 03:50:59 [2408] [INFO] Worker exiting (pid: 2408)
+2015-10-30 03:50:59 [2407] [INFO] Worker exiting (pid: 2407)
+2015-10-30 03:50:59 [2409] [INFO] Worker exiting (pid: 2409)
+2015-10-30 03:51:06 [2471] [ERROR] /static/ /Users/chirag/PycharmProjects/Diskus/static
+2015-10-30 03:51:40 [2472] [INFO] Worker exiting (pid: 2472)
+2015-10-30 03:51:40 [2471] [INFO] Worker exiting (pid: 2471)
+2015-10-30 03:51:40 [2473] [INFO] Worker exiting (pid: 2473)
+2015-10-30 03:52:21 [2484] [INFO] Worker exiting (pid: 2484)
+2015-10-30 03:52:21 [2486] [INFO] Worker exiting (pid: 2486)
+2015-10-30 03:52:21 [2485] [INFO] Worker exiting (pid: 2485)
+2015-10-30 03:59:12 [2495] [INFO] Worker exiting (pid: 2495)
+2015-10-30 03:59:12 [2494] [INFO] Worker exiting (pid: 2494)
+2015-10-30 03:59:12 [2493] [INFO] Worker exiting (pid: 2493)
+2015-10-30 04:29:53 [2665] [INFO] Worker exiting (pid: 2665)
+2015-10-30 04:29:53 [2667] [INFO] Worker exiting (pid: 2667)
+2015-10-30 04:29:53 [2666] [INFO] Worker exiting (pid: 2666)
+2015-10-30 04:32:31 [2678] [INFO] Worker exiting (pid: 2678)
+2015-10-30 04:32:31 [2680] [INFO] Worker exiting (pid: 2680)
+2015-10-30 04:32:31 [2679] [INFO] Worker exiting (pid: 2679)

@@ -193,34 +193,13 @@ body.loading .uploading-modal {
     }
 }
 
-@media (max-width: 480px) {
-.g-recaptcha > div > div {
-width:inherit !important;
-position:relative;
-display:block;
-padding:0;
-overflow:hidden;
-max-width:302px;
-border-right:1px solid #d3d3d3;
-border-radius:4px;
-box-shadow:2px 0px 4px -1px rgba(0,0,0,.08);
--webkit-box-shadow:2px 0px 4px -1px rgba(0,0,0,.08);
--moz-box-shadow:2px 0px 4px -1px rgba(0,0,0,.08)
+.btn-group>.btn.active, .btn-group>.btn:active
+{
+	color: white;
 }
-.g-recaptcha iframe{
-position:absolute;
-top:0;
-bottom:0;
-left:0;
-width:100%;
-height:100%;
-border:0;
+
+
+.just-black-link
+{
+    color: black;
 }
-.g-recaptcha > div{position:relative}
-.g-recaptcha > div:before{
-content:'Loading captcha...';
-position:absolute;
-top:38%;
-left:0;
-}
-.g-recaptcha:empty:before{content:'Something wrong occured'}}

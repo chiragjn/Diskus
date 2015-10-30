@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
+{% load static from staticfiles %}
 {% load app_filters %}
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static "css/home.css"%}">
@@ -8,7 +8,7 @@
     <div class="row new-thread">
 		<div class="col-lg-10 col-lg-offset-1">
             {% if user.is_authenticated and user.is_superuser %}
-                <a class="pull-right btn btn-black" href="new-category">New Category</a>
+                <a class="pull-right btn btn-black" href="new-category" style="margin-left: 1em;">New Category</a>
             {% endif %}
 			<a class="pull-right btn btn-black" href="{% if user.is_authenticated %} /new-thread {% else %} login{% endif %}">New Thread</a>
 		</div>
@@ -35,7 +35,7 @@
                                     {% if thread.0.locked %}
                                         <span class="pinned">Locked</span>
                                     {% endif %}
-                                    <div class="sub-title">Posted by : <a class="profile-link">{{ thread.0.op.user.username }}</a> on {{ thread.0.date|date:'d-M-Y' }}</div>
+                                    <div class="sub-title">Posted by : <a href="/profile/{{ thread.0.op.user.username }}" class="profile-link">{{ thread.0.op.user.username }}</a> on {{ thread.0.date|date:'d-M-Y' }}</div>
                                     <div class="sub-title">Replies : {{ thread.1 }}</div>
                                 </div>
                               {% endfor %}

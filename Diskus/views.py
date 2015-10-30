@@ -10,16 +10,14 @@ from Diskus.models import *
 from django.contrib.auth.models import User
 from itertools import chain
 from datetime import datetime
+import hashlib
 import logging
+import math
 
 log = logging.getLogger(__name__)
-
+posts_per_page = 15
+threads_per_page =15
 #TO DO
-#Add vaidation to Register Form
-#Send email for verification
-#Improve code in Paren's methods
-#Profile Page
-#Edit Profile
 #Profile Image
 
 def anonymous_required(view_function, redirect_to=None):
@@ -35,7 +33,7 @@ class AnonymousRequired(object):
 
     def __call__( self, request, *args, **kwargs ):
         if request.user is not None and request.user.is_authenticated():
-            return HttpResponseRedirect( self.redirect_to)
+            return HttpResponseRedirect(self.redirect_to)
         return self.view_function(request, *args, **kwargs)
 
 
@@ -78,7 +76,7 @@ def get_all_category_threads(request, slug):
         page = request.GET.get('page')
         context_dict['categories'] = category
         threads = Thread.objects.filter(category=category, visible=True).order_by('-pinned', '-last_modified')
-        paginator = Paginator(threads, 15)  # Show 15 threads per page
+        paginator = Paginator(threads, threads_per_page)  # Show 15 threads per page
         try:
             threads = paginator.page(page)
         except PageNotAnInteger:
@@ -104,14 +102,14 @@ def get_thread(request, slug_cat, slug_thread):
     :return: rendered page
     """
     context_dict = {}
-    thread = Thread.objects.filter(slug=slug_thread)[0]
+    thread = Thread.objects.get(slug=slug_thread)
     if thread and thread.category.slug == slug_cat:
         page = request.GET.get('page')
         context_dict['thread'] = thread
-        posts = Post.objects.filter(thread=thread, visible=True).order_by('date')
+        posts = Post.objects.filter(thread=thread).order_by('date')
         if posts:
             context_dict['first_post_pk'] = posts[0].pk
-        paginator = Paginator(posts, 15)  # Show 15 threads per page
+        paginator = Paginator(posts, posts_per_page)  # Show 15 threads per page
         try:
             posts = paginator.page(page)
         except PageNotAnInteger:
@@ -124,9 +122,8 @@ def get_thread(request, slug_cat, slug_thread):
     else:
         return page_not_found(request)
     if request.user.is_authenticated():
-        member = Member.objects.filter(user=request.user)
+        member = Member.objects.get(user=request.user)
         if member:
-            member = member[0]
             context_dict['member'] = member
     return render(request, 'thread.html', context_dict)
 
@@ -138,14 +135,13 @@ def make_post(request):
     :return: HttpResponse 200 or 500
     """
     if request.user.is_authenticated() and request.POST:
-        member = Member.objects.filter(user=request.user)
+        member = Member.objects.get(user=request.user)
         thread_id = request.POST.get('thread_id', -1)
         content = request.POST.get('content', -1)
         if thread_id != -1 and content != -1 and member:
-            member = member[0]
             post = Post()
             post.author = member
-            post.thread = Thread.objects.filter(pk=thread_id)[0]
+            post.thread = Thread.objects.get(pk=thread_id)
             post.content = content
             post.save()
             return HttpResponse(200)
@@ -159,30 +155,28 @@ def start_new_thread(request):
     context_dict = {}
     context_dict['selected_category'] = -1
     if request.user.is_authenticated():
-        member = Member.objects.filter(user=request.user)
+        member = Member.objects.get(user=request.user)
         if member:
-            member = member[0]
             context_dict['member'] = member
         categories = Category.objects.all()
         context_dict['categories'] = categories
         category_slug = request.GET.get('category',-1)
         if category_slug != -1:
             context_dict['selected_category'] = Category.objects.filter(slug=category_slug)[0].pk
-        return render(request,'newthread.html',context_dict)
+        return render(request, 'newthread.html', context_dict)
     else:
         return server_error(request)
         
-    
 
 def post_new_thread(request):
     if request.user.is_authenticated() and request.POST:
-        member = Member.objects.filter(user=request.user)[0]
+        member = Member.objects.get(user=request.user)
         category_slug = request.POST.get('category_slug',-1)
         thread_title = request.POST.get('thread_title',-1)
         content = request.POST.get('content', -1)
         log.error(category_slug + " " + thread_title + " " + content)
         if category_slug != -1 or thread_title != -1 or content != -1:
-            category = Category.objects.filter(slug=category_slug)[0]
+            category = Category.objects.get(slug=category_slug)
             thread = Thread()
             thread.category = category
             thread.op = member
@@ -201,24 +195,27 @@ def post_new_thread(request):
         return server_error(request)
 
 
+#Paren's Code Begins
 @anonymous_required
 def login_user(request):
-    # if request.user.is_authenticated():
-    #     return redirect('/')
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(username=username, password=password)
         if user is not None:
-            if user.is_active:
+            member = Member.objects.get(user=user)
+            if user.is_active and not member.banned:
                 login(request, user)
                 redir = '/' if 'next' not in request.POST else request.POST['next']
                 return redirect(redir)
+            elif not user.is_active:
+                return render(request, 'login.html', {'error': 'Account not activated,check email',
+                                                      'resend_email_form': True, 'user_username': user.username})
             else:
-                return render(request, 'login.html', {'error': 'You have been Blocked, Contact Admins'})
+                return render(request, 'login.html', {'error': 'You account has been banned!,Contact Admin'})
         else:
             return render(request, 'login.html', {'error': 'Invalid Username or Password'})
-    else:
+    elif request.method == 'GET':
         context_dict = {'next': '/'}
         if 'status' in request.session:
             context_dict['status'] = request.session['status']
@@ -226,73 +223,74 @@ def login_user(request):
         if 'next' in request.GET:
             context_dict['next'] = request.GET['next']
         return render(request, 'login.html', context_dict)
+    else:
+        return server_error(request)
 
 
 @anonymous_required
 def register_user(request):
-    # if request.user.is_authenticated():
-    #     return redirect('/')
     context_dict = {}
     if request.method == 'POST':
-        check_user = User.objects.filter(username=request.POST['username'],email=request.POST['email'])
-        log.error(check_user)
+        check_user = User.objects.filter(username=request.POST['username'], email=request.POST['email'])
         if check_user:
             context_dict["error"] = "User Already Exists!"
             return render(request, 'register.html', context_dict)
         else:
             user = User.objects.create_user(username=request.POST['username'],
                                             email=request.POST['email'], password=request.POST['password'])
+            user.is_active = False
             user.last_name = request.POST['last_name']
             user.first_name = request.POST['first_name']
             user.save()
             member = Member()
             member.user = user
-            member.date_of_birth = datetime.strptime(request.POST['dob'], '%d/%m/%Y')
+            member.date_of_birth = datetime.strptime(request.POST['dob'], '%d/%m/%y')
             member.details_visible = 'visible' in request.POST
             member.bio = request.POST['bio']
+            member.location = request.POST['location']
             member.save()
-            request.session['status'] = "Registration Successful"
+            send_verification_email(request, user)
+            request.session['status'] = "Registration Successful.Verification link sent to your email address"
             redirect_to = '/' if 'next' not in request.POST else request.POST['next']
             return redirect('/login?next='+redirect_to)
-    else:
+    elif request.method == 'GET':
         if 'next' in request.GET:
             context_dict['next'] = request.GET['next']
         return render(request, 'register.html', context_dict)
+    else:
+        return server_error(request)
 
 
 @anonymous_required
 def forgot_password(request):
-    # if request.user.is_authenticated():
-    #     return redirect('/')
     if request.method == 'GET':
         if 'user' in request.GET and 'hash' in request.GET:
-            return render(request, 'changeforgot.html', {'username': request.GET['user'],'hash': request.GET['hash']})
+            return render(request, 'changeforgot.html', {'username': request.GET['user'], 'hash': request.GET['hash']})
         else:
             return render(request, 'forgot.html')
-    else:
+    elif request.method == 'POST':
         if 'forgot' in request.POST:
+            user = None
             if request.POST['username'] != "":
                 user = User.objects.get(username=request.POST['username'])
-                url = reverse('forgot-password') + '?user=' + user.username + '&hash=' + user.password
-                url = request.build_absolute_uri(url)
-                message = "Hi " + user.first_name + ",\n"
-                message += "Please visit following link to reset password\n" + url
-                send_mail('Reset Password', message, 'diskusforums@gmail.com', [user.email])
-                return render(request, 'forgot.html', {'status': 'Please check your email for reset password link'})
             elif request.POST['email'] != "":
                 user = User.objects.get(email=request.POST['email'])
-                url = reverse('forgot-password') + '?user=' + user.username + '&hash=' + user.password
+            else:
+                return render(request, 'forgot.html', {'error': 'Some Error Occurred'})
+
+            if user is not None:
+                url = reverse('forgot-password') + '?user=' + user.username + '&hash=' + hashlib.md5(user.password.encode('utf-8')).hexdigest()
                 url = request.build_absolute_uri(url)
                 message = "Hi " + user.first_name + ",\n"
-                message += "Username: " + user.username + "\n"
                 message += "Please visit following link to reset password\n" + url
                 send_mail('Reset Password', message, 'diskusforums@gmail.com', [user.email])
                 return render(request, 'forgot.html', {'status': 'Please check your email for reset password link'})
             else:
-                return render(request, 'forgot.html', {'error': 'Some Error Occurred'})
+                return render(request, 'forgot.html', {'error': 'No such user or email address'})
+
         elif 'change' in request.POST:
             user = User.objects.get(username=request.POST['username'])
-            if '+'.join(request.POST['hash'].split(' ')) == user.password:  # hack because request replaced + with ' '
+            if request.POST['hash'] == hashlib.md5(user.password.encode('utf-8')).hexdigest():
                 user.set_password(request.POST['password'])
                 user.save()
                 request.session['status'] = "Successfully Changed Password"
@@ -301,8 +299,124 @@ def forgot_password(request):
                 return redirect('/')
         else:
             return render(request, 'forgot.html')
+    else:
+        return server_error(request)
 
 
 def profile(request, slug):
     member = Member.objects.get(slug=slug)
-    return render(request, 'profile.html', {'member': member})
+    self = request.user.is_authenticated() and request.user == member.user
+    threads = Thread.objects.filter(op=member, visible=True).order_by('-date')[:5]
+    posts = Post.objects.filter(author=member).order_by('-date')[:5]
+    return render(request, 'profile.html', {'member': member, 'self': self, 'threads': threads, 'posts': posts})
+
+
+def profile_edit(request, slug):
+    if request.method == 'GET':
+        if request.user.is_authenticated() and request.user == Member.objects.get(slug=slug).user:
+            return render(request, 'edit.html', {'member': Member.objects.get(slug=slug)})
+        return redirect('/')
+    elif request.method == 'POST':
+        if 'change' in request.POST:
+            user = request.user
+            user.first_name = request.POST['first_name']
+            user.last_name = request.POST['last_name']
+            member = Member.objects.get(user=user)
+            member.date_of_birth = request.POST['dob']
+            member.location = request.POST['location']
+            member.bio = request.POST['bio']
+            member.details_visible = 'visible' in request.POST
+            user.save()
+            member.save()
+            return redirect('/profile/'+member.slug)
+        return render(request, 'profile.html',  {'error': 'Some error occurred'})
+    else:
+        return server_error(request)
+
+
+def verify_user(request):
+    if request.method == 'GET':
+        if 'user' in request.GET and 'hash' in request.GET:
+            user = User.objects.get(username=request.GET['user'])
+            if request.GET['hash'] == hashlib.md5(user.password.encode('utf-8')).hexdigest():
+                user.is_active = True
+                user.save()
+                request.session['status'] = "Account Verified!"
+                return redirect('/login/')
+        else:
+            return redirect('/')
+    elif request.method == 'POST':
+        user = User.objects.get(username=request.POST['user_username'])
+        if user is not None:
+            send_verification_email(request, user)
+            request.session['status'] = "Verification link sent!"
+            return redirect('/login/')
+        else:
+            return server_error(request)
+    else:
+        return server_error(request)
+
+
+def send_verification_email(request, user):
+    url = reverse('verify_user') + '?user=' + user.username + '&hash=' + hashlib.md5(user.password.encode('utf-8')).hexdigest()
+    url = request.build_absolute_uri(url)
+    message = "Hi " + user.username + ",\n"
+    message += "Please visit following link to verify your account \n" + url
+    send_mail('Verify your Diskus Account!', message, 'diskusforums@gmail.com', [user.email])
+
+
+def view_post(request, slug_cat, slug_thread, post_number, relative_post_number):
+    thread = Thread.objects.get(slug=slug_thread)
+    if thread and thread.category.slug == slug_cat:
+        page_number = int(math.ceil(int(relative_post_number)/threads_per_page)) + 1
+        return redirect('/category/' + slug_cat + '/thread/' + slug_thread + '?page=' + str(page_number))
+    else:
+        return page_not_found(request)
+
+
+def delete_post(request, slug_cat, slug_thread, post_number):
+    if request.user.is_authenticated():
+        post = Post.objects.get(pk=post_number)
+        member = Member.objects.get(user=request.user)
+        if post and member and (member.type > 0 or post.author == member):
+            thread = Thread.objects.get(slug=slug_thread)
+            if thread and thread.category.slug == slug_cat:
+                post.visible = False
+                post.save()
+                return redirect('/category/' + slug_cat + '/thread/' + slug_thread + '?page=' + 1)
+            else:
+                return server_error(request)
+        else:
+            return server_error(request)
+    else:
+        return redirect('/login/')
+
+
+def edit_post(request, slug_cat, slug_thread, post_number):
+    if request.user.is_authenticated():
+        post = Post.objects.get(pk=post_number)
+        member = Member.objects.get(user=request.user)
+        if post and member and (member.type > 0 or post.author == member):
+            thread = Thread.objects.get(slug=slug_thread)
+            if thread and thread.category.slug == slug_cat:
+                return render(request, 'editpost.html',  {'post': post, 'member': post.author,'category_slug': slug_cat,'thread_slug': slug_thread})
+            else:
+               return server_error(request)
+        else:
+            return server_error(request)
+    else:
+        return redirect('/login/')
+
+
+def save_edited_post(request, slug_cat, slug_thread, post_number):
+    if request.user.is_authenticated() and request.POST:
+        post = Post.objects.get(pk=post_number)
+        member = Member.objects.get(user=request.user)
+        if post and member and (member.type > 0 or post.author == member):
+            post.content = request.POST['content']
+            post.save()
+            return HttpResponse('category/' + slug_cat + '/thread/' + slug_thread + '?page=1')
+        else:
+            return server_error(request)
+    else:
+        return server_error(request)

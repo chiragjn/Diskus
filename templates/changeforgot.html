@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
+{% load static from staticfiles %}
 {% load app_filters %}
 {% block extra_css %}
 {% endblock %}
@@ -29,7 +29,7 @@
                         <input class="input form-control input-lg" type="password" name="cpassword" placeholder="Confirm Password">
                         <input type="hidden" name="username" value="{{ username }}">
                         <input type="hidden" name="hash" value="{{ hash }}">
-                        <input class="center-block submit-button form-control btn-black center" type="submit" name="change" value="Change Password">
+                        <input class="center-block submit-button form-control btn-black center" type="submit" name="change" value="Change">
                     </form>
                 </div>
             </div>

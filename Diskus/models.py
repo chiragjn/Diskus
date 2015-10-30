@@ -13,6 +13,8 @@ class Member(models.Model):
     details_visible = models.BooleanField(default=True)
     bio = models.CharField(max_length=500, default=None)
     slug = models.SlugField(unique=True, blank=True)
+    location = models.CharField(max_length=100, blank=True)
+    banned = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.user.username)
@@ -77,6 +79,7 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         self.thread.save()
         super(Post, self).save(*args, **kwargs)
+
 
 class Report(models.Model):
     member = models.ForeignKey(Member)

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
+{% load static from staticfiles %}
 {% load app_filters %}
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static "css/home.css"%}">
@@ -50,7 +50,7 @@
                                     {% if thread.0.locked %}
                                         <span class="pinned">Locked</span>
                                     {% endif %}
-                                    <div class="sub-title">Posted By : <a class="profile-link">{{ thread.0.op.user.username }}</a> on {{ thread.0.date|date:'d-M-Y' }}</div>
+                                    <div class="sub-title">Posted By : <a href="/profile/{{ thread.0.op.user.username }}" class="profile-link">{{ thread.0.op.user.username }}</a> on {{ thread.0.date|date:'d-M-Y' }}</div>
                                     <div class="sub-title">Replies : {{ thread.1 }}</div>
                                 </div>
                               {% endfor %}

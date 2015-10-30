@@ -121,12 +121,22 @@ $(document).ready(function() {
 //
 //    });
 //
-//    $('.delete-post').click(function(){
-//
-//    });
-//
-//    $('.permalink-post').click(function(){
-//
-//    });
+    $('.delete-post').click(function(){
+        $('#confirm-delete').prop('href',$(this).attr('post-del-href'));
+        $('#deleteModal').modal('show');
+    });
 
+    $('.quote-post').on('click',function(){
+        var user =$(this).parent().parent().parent().find('.post-info').find('.user-profile').clone();
+        user = user.prop('class','just-black-link')
+        user = user.wrap('<div>').parent().html();
+        console.log(user);
+        var text_to_quote  =$(this).parent().parent().find('.post-body').html() ;
+        var raw_editor =  $('.note-editable.panel-body');
+        raw_editor.html( raw_editor.html() + "@" + user + " said:<br><blockquote>" + text_to_quote + "</blockquote><br>" );
+		var target = $('.post-reply-row');
+		$('html,body').animate({
+          scrollTop: target.offset().top
+        }, 1000);
+    });
 });

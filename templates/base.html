@@ -6,7 +6,7 @@
 <title>
   DISKUS
 </title>
-{% load staticfiles %}
+{% load static from staticfiles %}
 <link rel="icon" href="{% static "image/favicon.png" %}" type="image/png">
 <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400italic,700italic,400,700" rel="stylesheet" type="text/css">
@@ -30,7 +30,7 @@
         <div class="collapse navbar-collapse" id="collapse-menu">
             <ul class="nav navbar-nav navbar-right">
              {% if user.is_authenticated %}
-                <li class="btn btn-black" onclick="location.href='/profile';">
+                <li class="btn btn-black" onclick="location.href='/profile/{{ user.username }}';">
                    <a>{{ user.username }}</a>
                 </li>
                 <li class="btn btn-black" onclick="location.href='/logout';">
@@ -52,15 +52,15 @@
 </nav>
 <div class="content container">
     {% block body_block %}{% endblock %}
-	<footer>
-		<div class="row">
-			<div class="col-lg-12 center">
-				<a class="footer-link pull-left" data-toggle="modal" data-target="#aboutModal">About Us</a>
-				<a class="footer-link">Diskus @ 2015</a>
-				<!-- <a class="footer-link pull-right">Contact Us</a> -->
-			</div>
-		</div>	
-	</footer>
+  <footer>
+    <div class="row">
+      <div class="col-lg-12 center">
+        <a class="footer-link pull-left" data-toggle="modal" data-target="#aboutModal">About Us</a>
+        <a class="footer-link">Diskus @ 2015</a>
+        <!-- <a class="footer-link pull-right">Contact Us</a> -->
+      </div>
+    </div>  
+  </footer>
 </div>
 <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel">
   <div class="modal-dialog" role="document">

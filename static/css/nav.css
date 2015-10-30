@@ -7,7 +7,7 @@
 
 .navbar-default .navbar-nav>li
 {
-	margin: 1em 1em;
+	margin: 1rem 1em;
 }
 
 .navbar-default .navbar-nav>li>a,.navbar-default .navbar-nav>li>a:hover {
@@ -68,12 +68,14 @@
 	padding: 1em 1em;
 	box-sizing: content-box;
 }
-
-.btn-black:hover
+.btn-black:hover, .btn-black:focus, .btn-black:active
 {
-	color : white;
+	color: white !important;
+	border-width: 1px !important;
+	border-color: black;
 	background-color: black;
 	transition : 0.2s;
+	box-shadow: none !important;
 }
 
 .btn-white
@@ -184,3 +186,47 @@ footer
    padding-left: 2em;
    padding-right: 2em;
 }
+
+.new-thread
+{
+	margin-bottom: 2em;
+}
+
+
+.space-one-em
+{
+    padding: 0 1em;
+    margin: 1em 0;
+}
+
+.black-focus
+{
+    font-family: Montserrat;
+    line-height: 1.0em;
+
+}
+
+a:focus
+{
+    color: #000000;
+}
+
+
+.avatar2
+{
+	max-width: 152px;
+}
+
+.input {
+    border-radius: 0px;
+    border-width: 1px;
+    border-color: black;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.input:active, .input:focus{
+    border-width: 2px;
+    border-color: black;
+    box-shadow: none !important;
+}
+
